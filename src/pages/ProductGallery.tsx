@@ -1,135 +1,124 @@
-import { useEffect, useState } from 'react';
-import { useParams, Link } from 'react-router-dom';
-import { ArrowLeft } from 'lucide-react';
-import Header from '@/components/ui/Header';
-import Footer from '@/components/ui/Footer';
-import { Button } from '@/components/ui/button';
-import { siteData } from '@/lib/data';
+// src/components/ui/ProjectsGallery.tsx
+import { useEffect, useState } from "react";
+import { Dialog, DialogContent } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
+import { X, ChevronLeft, ChevronRight, ZoomIn } from "lucide-react";
+import { motion } from "framer-motion";
 
-export default function ProductGallery() {
-  const { slug } = useParams();
-  const [scrollY, setScrollY] = useState(0);
-  const [isLoaded, setIsLoaded] = useState(false);
+type Img = { src: string; title?: string };
+type Props = {
+  images: Img[];
+  cols?: { base?: 2 | 3 | 4; md?: 2 | 3 | 4 | 5; lg?: 3 | 4 | 5 | 6 };
+};
 
-  const product = siteData.products.find(p => p.slug === slug);
+const classFor = (prefix: "grid-cols" | "sm:grid-cols" | "lg:grid-cols", n: number) => {
+  // explicit static classes so Tailwind picks them up
+  const map: Record<number, string> = {
+    2: `${prefix}-2`,
+    3: `${prefix}-3`,
+    4: `${prefix}-4`,
+    5: `${prefix}-5`,
+    6: `${prefix}-6`,
+  };
+  return map[n] ?? `${prefix}-3`;
+};
+
+export default function ProjectsGallery({
+  images,
+  cols = { base: 2, md: 3, lg: 4 },
+}: Props) {
+  const [open, setOpen] = useState(false);
+  const [idx, setIdx] = useState(0);
 
   useEffect(() => {
-    const handleScroll = () => setScrollY(window.scrollY);
-    window.addEventListener('scroll', handleScroll);
-    
-    setTimeout(() => setIsLoaded(true), 100);
-    
-    return () => window.removeEventListener('scroll', handleScroll);
-  }, []);
-
-  if (!product) {
-    return <div>Продуктът не е намерен</div>;
-  }
+    if (!open) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "ArrowRight") setIdx((i) => (i + 1) % images.length);
+      if (e.key === "ArrowLeft") setIdx((i) => (i - 1 + images.length) % images.length);
+      if (e.key === "Escape") setOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [open, images.length]);
 
   return (
-    <div className="min-h-screen" style={{
-      background: `linear-gradient(180deg, #689F38 0%, #8BC34A 30%, #AED581 60%, #C8E6C9 80%, #E8F5E8 100%)`
-    }}>
-      <Header />
-      
-      {/* Hero Section with Parallax */}
-      <section className="relative min-h-screen flex items-center justify-center overflow-hidden">
-        {/* Parallax Background */}
-        <div 
-          className="absolute inset-0 bg-cover bg-center bg-no-repeat"
-          style={{
-            backgroundImage: `url('${product.image}')`,
-            transform: `translateY(${scrollY * 0.5}px)`,
-          }}
-        />
-        
-        {/* Dark Overlay */}
-        <div className="absolute inset-0" style={{
-          background: `linear-gradient(135deg, rgba(104, 159, 56, 0.8) 0%, rgba(139, 195, 74, 0.7) 50%, rgba(174, 213, 129, 0.6) 100%)`
-        }} />
-        
-        {/* Floating Elements */}
-        <div className="absolute inset-0 overflow-hidden">
-          <div 
-            className="absolute top-20 left-10 w-32 h-32 rounded-full blur-xl"
-            style={{
-              background: 'rgba(139, 195, 74, 0.3)',
-              transform: `translate(${scrollY * 0.1}px, ${scrollY * 0.2}px)`,
-            }}
-          />
-          <div 
-            className="absolute top-40 right-20 w-24 h-24 rounded-full blur-xl"
-            style={{
-              background: 'rgba(174, 213, 129, 0.3)',
-              transform: `translate(${-scrollY * 0.15}px, ${scrollY * 0.1}px)`,
-            }}
-          />
-        </div>
-
-        {/* Content */}
-        <div className="container mx-auto px-4 text-center relative z-10">
-          <div className="max-w-4xl mx-auto">
-            <Link to="/" className="inline-flex items-center mb-8 px-6 py-3 rounded-full text-white font-bold transition-all duration-300 hover:scale-105" style={{
-              background: 'linear-gradient(135deg, #689F38 0%, #8BC34A 100%)'
-            }}>
-              <ArrowLeft className="mr-2 h-5 w-5" />
-              Назад към началото
-            </Link>
-            
-            <h1 className={`text-6xl md:text-8xl font-black mb-8 transition-all duration-1500 transform ${
-              isLoaded ? 'translate-x-0 opacity-100' : '-translate-x-full opacity-0'
-            }`}>
-              <span className="text-white drop-shadow-2xl">
-                {product.title}
-              </span>
-            </h1>
-            
-            <p className={`text-2xl md:text-3xl text-white mb-16 leading-relaxed font-bold drop-shadow-lg transition-all duration-1500 delay-300 transform ${
-              isLoaded ? 'translate-x-0 opacity-100' : 'translate-x-full opacity-0'
-            }`}>
-              {product.description}
-            </p>
-          </div>
-        </div>
-      </section>
-
-      {/* Gallery Section */}
-      <section className="py-20 bg-white/90 backdrop-blur-sm">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-16">
-            <h2 className="text-5xl font-black mb-6" style={{ color: '#689F38' }}>
-              ГАЛЕРИЯ
-            </h2>
-            <div className="w-32 h-2 mx-auto rounded-full" style={{
-              background: 'linear-gradient(135deg, #689F38 0%, #8BC34A 100%)'
-            }}></div>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {product.gallery.map((image, index) => (
-              <div
-                key={index}
-                className="group relative overflow-hidden rounded-2xl shadow-2xl hover:shadow-3xl transition-all duration-500 transform hover:-translate-y-2"
-              >
-                <img 
-                  src={image} 
-                  alt={`${product.title} проект ${index + 1}`}
-                  className="w-full h-80 object-cover transition-transform duration-500 group-hover:scale-110"
-                />
-                <div className="absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-300" style={{
-                  background: 'linear-gradient(135deg, rgba(104, 159, 56, 0.8) 0%, rgba(139, 195, 74, 0.6) 100%)'
-                }}>
-                  <div className="absolute bottom-4 left-4 text-white">
-                    <p className="text-lg font-bold">Проект {index + 1}</p>
-                  </div>
-                </div>
+    <>
+      <div
+        className={[
+          "grid gap-4",
+          classFor("grid-cols", cols.base ?? 2),
+          classFor("sm:grid-cols", cols.md ?? 3),
+          classFor("lg:grid-cols", cols.lg ?? 4),
+        ].join(" ")}
+      >
+        {images.map((img, i) => (
+          <button
+            key={img.src}
+            className="group relative aspect-[4/3] w-full overflow-hidden rounded-xl shadow-lg ring-1 ring-black/5 focus:outline-none"
+            onClick={() => { setIdx(i); setOpen(true); }}
+          >
+            <img
+              src={img.src}
+              alt={img.title ?? `Проект ${i + 1}`}
+              className="h-full w-full object-cover transition-transform duration-500 group-hover:scale-105"
+              loading="lazy"
+            />
+            <div className="pointer-events-none absolute inset-0 bg-black/0 group-hover:bg-black/20 transition-colors" />
+            <div className="pointer-events-none absolute bottom-0 left-0 right-0 flex items-center justify-between p-3">
+              <div className="rounded-md bg-black/50 px-2 py-1 text-xs font-semibold text-white backdrop-blur-sm">
+                {img.title ?? `Проект ${i + 1}`}
               </div>
-            ))}
+              <div className="rounded-full bg-white/80 p-1 backdrop-blur-sm">
+                <ZoomIn className="h-4 w-4 text-neutral-800" />
+              </div>
+            </div>
+          </button>
+        ))}
+      </div>
+
+      <Dialog open={open} onOpenChange={setOpen}>
+        <DialogContent className="max-w-[min(1100px,95vw)] p-0 overflow-hidden bg-black/90 border-0">
+          <div className="relative flex items-center justify-center">
+            <motion.img
+              key={images[idx]?.src}
+              src={images[idx]?.src}
+              alt={images[idx]?.title ?? `Проект ${idx + 1}`}
+              className="max-h-[82vh] w-auto object-contain select-none"
+              initial={{ opacity: 0.6, scale: 0.98 }}
+              animate={{ opacity: 1, scale: 1 }}
+              transition={{ duration: 0.25 }}
+            />
+            <div className="absolute left-0 right-0 top-0 flex items-center justify-between p-3">
+              <div className="rounded-md bg-black/50 px-2 py-1 text-xs font-semibold text-white">
+                {images[idx]?.title ?? `Проект ${idx + 1}`} • {idx + 1}/{images.length}
+              </div>
+              <Button size="icon" variant="ghost" className="text-white hover:bg-white/10" onClick={() => setOpen(false)}>
+                <X className="h-5 w-5" />
+              </Button>
+            </div>
+            <div className="absolute inset-y-0 left-0 flex items-center">
+              <Button
+                size="icon"
+                variant="ghost"
+                className="mx-2 rounded-full bg-white/10 text-white hover:bg-white/20"
+                onClick={() => setIdx((i) => (i - 1 + images.length) % images.length)}
+              >
+                <ChevronLeft className="h-6 w-6" />
+              </Button>
+            </div>
+            <div className="absolute inset-y-0 right-0 flex items-center">
+              <Button
+                size="icon"
+                variant="ghost"
+                className="mx-2 rounded-full bg-white/10 text-white hover:bg-white/20"
+                onClick={() => setIdx((i) => (i + 1) % images.length)}
+              >
+                <ChevronRight className="h-6 w-6" />
+              </Button>
+            </div>
           </div>
-        </div>
-      </section>
-      
-      <Footer />
-    </div>
+        </DialogContent>
+      </Dialog>
+    </>
   );
 }

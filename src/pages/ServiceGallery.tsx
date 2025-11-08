@@ -30,7 +30,7 @@ export default function ServiceGallery() {
     <div className="min-h-screen" style={{
       background: `linear-gradient(180deg, #689F38 0%, #8BC34A 30%, #AED581 60%, #C8E6C9 80%, #E8F5E8 100%)`
     }}>
-      <Header />
+      {/*<Header/>  removing for now*/}
       
       {/* Hero Section with Parallax */}
       <section className="relative min-h-screen flex items-center justify-center overflow-hidden">

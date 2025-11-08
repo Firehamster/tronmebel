@@ -28,7 +28,7 @@ export default function ContactSection() {
     <motion.section
       id="contact"
       ref={sectionRef}
-      className="py-20 sm:py-24 text-white relative overflow-hidden"
+      className="py-20 sm:py-24 text-white relative overflow-hidden scroll-mt-24"
       style={{
         background: 'linear-gradient(135deg, #9FD37A 0%, #7FB95A 35%, #3F8F3A 75%, #2F6F2C 100%)',
         clipPath: 'polygon(0 4%, 100% 0%, 100% 100%, 0% 100%)'
@@ -114,6 +114,21 @@ export default function ContactSection() {
 
             </div>
           </div>
+        </div>
+
+        {/* Map with pin for: обл. София, село Мировяне, ул. Индустриален път 4 */}
+        <div className="w-full max-w-5xl mx-auto mt-12 h-[420px] rounded-2xl overflow-hidden shadow-2xl ring-1 ring-white/20 relative z-10">
+          <iframe
+            className="absolute inset-0 w-full h-full border-0"
+            loading="lazy"
+            allowFullScreen
+            referrerPolicy="no-referrer-when-downgrade"
+            // place-search embed (no API key needed)
+            src={`https://www.google.com/maps?q=${encodeURIComponent(
+              "обл. София, село Мировяне, ул. Индустриален път 4"
+            )}&hl=bg&output=embed`}
+            title="ТРОН МЕБЕЛ — обл. София, с. Мировяне, ул. Индустриален път 4"
+          />s
         </div>
 
         {/* Social Media Section */}

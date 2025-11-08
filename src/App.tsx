@@ -6,6 +6,8 @@ import Index from './pages/Index';
 import ServiceGallery from './pages/ServiceGallery';
 import ProductGallery from './pages/ProductGallery';
 import NotFound from './pages/NotFound';
+import StickyRevealFrame from './components/StickyRevealFrame';
+import Header from '@/components/ui/Header'; // your colorful header
 
 const queryClient = new QueryClient();
 
@@ -14,6 +16,10 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <BrowserRouter>
+        <StickyRevealFrame headerHeight={96} hotzoneHeight={6}>
+          <Header />
+        </StickyRevealFrame>
+
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/service/:slug" element={<ServiceGallery />} />

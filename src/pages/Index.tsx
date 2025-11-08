@@ -1,19 +1,32 @@
 import { useEffect, useState } from 'react';
 import Header from '@/components/ui/Header';
 import ServiceCard from '@/components/ui/ServiceCard';
+import ProjectsGallery from "@/components/ui/ProjectsGallery";
 import ProductCard from '@/components/ui/ProductCard';
 import ProjectCard from '@/components/ui/ProjectCard';
 import AboutSection from '@/components/ui/AboutSection';
 import ContactSection from '@/components/ui/ContactSection';
 import FAQSection from '@/components/ui/FAQSection';
 import Footer from '@/components/ui/Footer';
+import ProjectsCarousel from "@/components/ui/ProjectsCarousel";
 import { Button } from '@/components/ui/button';
 import { siteData } from '@/lib/data';
 import { motion } from 'framer-motion';
 
+
 export default function Index() {
   const [scrollY, setScrollY] = useState(0);
   const [isLoaded, setIsLoaded] = useState(false);
+  const modules = import.meta.glob('@/assets/projects/*.{jpg,JPG,jpeg,png}', {
+    eager: true,
+    import: 'default',
+    query: '?url',
+  }) as Record<string, string>;
+
+  const projectImages = Object.values(modules)
+    .sort((a, b) => a.localeCompare(b, undefined, { numeric: true }))
+    .map((url, i) => ({ src: url, title: `Проект ${i + 1}` }));
+
 
   useEffect(() => {
     const handleScroll = () => setScrollY(window.scrollY);
@@ -28,6 +41,28 @@ export default function Index() {
     <div className="min-h-screen relative overflow-hidden" style={{
       background: `linear-gradient(180deg, #E8F5E9 0%, #C8E6C9 20%, #A5D6A7 40%, #8BC34A 60%, #689F38 80%, #4CAF50 100%)`
     }}>
+      
+      
+      <div 
+  className="absolute inset-0 z-0"
+  style={{ background: `linear-gradient(135deg, #7FB95A 0%, #9FD37A 50%, #BEE6A0 100%)` }}
+/>
+
+<div 
+  className="absolute inset-0 bg-cover bg-center bg-no-repeat z-0"
+  style={{ backgroundImage: `url('...')`, transform: `translateY(${scrollY * 0.5}px)`, opacity: 0.7 }}
+/>
+
+<div
+  className="absolute inset-0 z-0"
+  style={{ background: `linear-gradient(135deg, rgba(127,185,90,0.35) 0%, rgba(159,211,122,0.28) 50%, rgba(190,230,160,0.2) 100%)` }}
+/>
+
+<div
+  className="absolute inset-0 z-0"
+  style={{ background: `radial-gradient(60% 40% at 50% 45%, rgba(255,255,255,0.22) 0%, rgba(255,255,255,0.12) 40%, transparent 70%)` }}
+/>
+
       {/* Floating Emerald Elements */}
       <div className="fixed inset-0 pointer-events-none z-0">
         <motion.div
@@ -106,10 +141,11 @@ export default function Index() {
         />
       </div>
 
-      <Header />
+      {/*<Header/>  removing for now*/}
+
       
       {/* Hero Section */}
-      <section id="home" className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      <section id="home" className="scroll-mt-24 relative min-h-screen flex items-center justify-center overflow-hidden">
         {/* Brand Green Background Gradient (warmer & slightly lighter) */}
         <div 
           className="absolute inset-0"
@@ -161,7 +197,7 @@ export default function Index() {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-20 bg-white/90 backdrop-blur-sm relative">
+      <section id="services" className="scroll-mt-24 py-20 bg-white/90 backdrop-blur-sm relative">
         <div className="container mx-auto px-4">
           <motion.div 
             className="text-center mb-16"
@@ -217,7 +253,7 @@ export default function Index() {
       </section>
 
       {/* Products Section */}
-      <section id="products" className="py-20 bg-white/70 backdrop-blur-sm relative">
+      <section id="products" className="scroll-mt-24 py-20 bg-white/70 backdrop-blur-sm relative">
         <div className="container mx-auto px-4">
           <div className="text-center mb-16">
             <h2 className="text-5xl font-black mb-6" style={{ color: '#689F38' }}>НАШИТЕ ПРОДУКТИ</h2>
@@ -254,21 +290,11 @@ export default function Index() {
             <p className="text-xl mt-6 max-w-2xl mx-auto font-semibold" style={{ color: '#689F38' }}>
               Реализирани проекти, които говорят за нашето качество
             </p>
-          </div>
-          
-          <div className="grid md:grid-cols-3 gap-8">
-            {siteData.projects.map((project, index) => (
-              <div
-                key={project.id}
-                className="animate-in fade-in slide-in-from-bottom-8 duration-700"
-                style={{ animationDelay: `${index * 200}ms` }}
-              >
-                <ProjectCard {...project} />
-              </div>
-            ))}
-          </div>
-        </div>
-      </section>
+          </div>        
+   <ProjectsCarousel images={projectImages} height={520} />
+  </div>
+</section>
+
 
       {/* About / FAQ / Contact */}
       <AboutSection />

@@ -13,11 +13,21 @@ export default function Header() {
   const blurAmount = useTransform(scrollY, [0, 100], [8, 12]);
   const scaleAmount = useTransform(scrollY, [0, 100], [1, 0.98]);
 
+  const HEADER_H = 96; // h-24
+
+  function scrollToId(id: string) {
+    const el = document.getElementById(id);
+    if (!el) return;
+    const y = el.getBoundingClientRect().top + window.scrollY - HEADER_H;
+    window.scrollTo({ top: y, behavior: "smooth" });
+    history.replaceState(null, "", `#${id}`);
+  }
+
   return (
     <>
       {/* Scroll Progress Bar */}
       <motion.div
-        className="fixed top-0 left-0 right-0 h-1 z-50"
+        className="fixed top-0 left-0 right-0 h-1 z-[120]"
         style={{
           background: 'linear-gradient(90deg, #689F38 0%, #8BC34A 50%, #AED581 100%)',
           scaleX: useTransform(scrollY, [0, document.body.scrollHeight - window.innerHeight], [0, 1]),
@@ -26,12 +36,11 @@ export default function Header() {
       />
       
       <motion.header 
-        className="backdrop-blur-sm shadow-lg sticky top-0 z-40 border-b"
+        className="backdrop-blur-sm shadow-lg border-b"
         style={{ 
           borderColor: '#8BC34A',
           backgroundColor: useTransform(scrollY, [0, 100], ['rgba(255,255,255,0.95)', 'rgba(255,255,255,0.98)']),
-          backdropFilter: useTransform(scrollY, [0, 100], ['blur(8px)', 'blur(12px)']),
-          scale: scaleAmount
+          backdropFilter: useTransform(scrollY, [0, 100], ['blur(8px)', 'blur(12px)'])
         }}
       >
       <div className="container mx-auto px-4">
@@ -62,31 +71,41 @@ export default function Header() {
 
           {/* Desktop Navigation */}
           <nav className="hidden md:block">
-            <div className="ml-10 flex items-baseline space-x-2">
-              {siteData.navigation.map((item) => (
+          <div className="ml-10 flex items-baseline space-x-2">
+            {siteData.navigation.map((item) => {
+              const hash = item.href.startsWith("#") ? item.href.slice(1) : item.href;
+              return (
                 <a
                   key={item.name}
                   href={item.href}
-                  className="text-lg font-black px-6 py-3 transition-all duration-300 relative group rounded-full transform hover:scale-105 shadow-lg hover:shadow-xl"
-                  style={{ 
-                    color: '#689F38',
-                    background: 'transparent'
+                  onClick={(e) => {
+                    if (item.href.startsWith("#")) {
+                      e.preventDefault();
+                      scrollToId(hash);
+                    }
                   }}
+                  className="text-lg font-black px-6 py-3 transition-all duration-300 relative group rounded-full transform hover:scale-105 shadow-lg hover:shadow-xl"
+                  style={{ color: "#689F38", background: "transparent" }}
                   onMouseEnter={(e) => {
-                    e.target.style.background = 'linear-gradient(135deg, #689F38 0%, #8BC34A 100%)';
-                    e.target.style.color = 'white';
+                    (e.currentTarget as HTMLAnchorElement).style.background =
+                      "linear-gradient(135deg, #689F38 0%, #8BC34A 100%)";
+                    (e.currentTarget as HTMLAnchorElement).style.color = "white";
                   }}
                   onMouseLeave={(e) => {
-                    e.target.style.background = 'transparent';
-                    e.target.style.color = '#689F38';
+                    (e.currentTarget as HTMLAnchorElement).style.background = "transparent";
+                    (e.currentTarget as HTMLAnchorElement).style.color = "#689F38";
                   }}
                 >
                   {item.name}
-                  <span className="absolute bottom-0 left-0 w-0 h-1 transition-all duration-300 group-hover:w-full rounded-full" style={{ background: 'linear-gradient(135deg, #689F38 0%, #8BC34A 100%)' }}></span>
+                  <span
+                    className="absolute bottom-0 left-0 w-0 h-1 transition-all duration-300 group-hover:w-full rounded-full"
+                    style={{ background: "linear-gradient(135deg, #689F38 0%, #8BC34A 100%)" }}
+                  />
                 </a>
-              ))}
-            </div>
-          </nav>
+              );
+            })}
+          </div>
+        </nav>
 
           {/* Mobile menu button */}
           <div className="md:hidden">

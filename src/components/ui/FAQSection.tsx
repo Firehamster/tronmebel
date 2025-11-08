@@ -14,7 +14,7 @@ export default function FAQSection() {
   };
 
   return (
-    <section id="faq" className="py-20 bg-white/10 backdrop-blur-sm relative">
+    <section id="faq" className="scroll-mt-24 py-20 bg-white/10 backdrop-blur-sm relative">
       <div className="container mx-auto px-4">
         <div className="text-center mb-16">
           <h2 className="text-5xl font-black mb-6" style={{ color: '#689F38' }}>

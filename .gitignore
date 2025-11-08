@@ -1,1 +1,28 @@
-.vercel
+# OS
+.DS_Store
+Thumbs.db
+.git_bkp
+
+# Node & pnpm
+node_modules/
+.pnpm-store/
+.pnpm-debug.log
+
+# Build output
+dist/
+build/
+.vite/
+
+# Environment
+.env
+.env.local
+
+# App tooling
+.vscode/
+.idea/
+
+# MGX / plugin junk
+.mgx/
+
+# Logs
+*.log
